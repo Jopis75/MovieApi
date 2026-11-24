@@ -4,14 +4,9 @@ using MovieApi.Models;
 
 [Route("api/[controller]")]
 [ApiController]
-public class MoviesController : ControllerBase
+public class MoviesController(MovieDbContext context) : ControllerBase
 {
-    private readonly MovieDbContext _context;
-
-    public MoviesController(MovieDbContext context)
-    {
-        _context = context;
-    }
+    private readonly MovieDbContext _context = context;
 
     // GET: api/Movie
     [HttpGet]
