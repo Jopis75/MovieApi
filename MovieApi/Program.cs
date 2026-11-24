@@ -7,12 +7,9 @@ namespace MovieApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var connectionString = builder.Configuration.GetConnectionString("MovieDbContext") ?? throw new InvalidOperationException("Connection string 'MovieDbContext' not found.");
-
-            builder.Services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(connectionString));
 
             // Add services to the container.
-
+            builder.Services.AddServices(builder.Configuration);
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
