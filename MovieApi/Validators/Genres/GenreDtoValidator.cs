@@ -3,15 +3,15 @@ using MovieApi.Dtos.Genres;
 
 namespace MovieApi.Validators.Genres
 {
-    public class ReadGenreDtoValidator : AbstractValidator<ReadGenreDto>
+    public class GenreDtoValidator : AbstractValidator<GenreDto>
     {
-        public ReadGenreDtoValidator()
+        public GenreDtoValidator()
         {
-            RuleFor(readGenreDto => readGenreDto.Id)
+            RuleFor(genreDto => genreDto.Id)
                 .GreaterThan(0)
                 .WithMessage("{PropertyName} must be greater than 0.");
 
-            RuleFor(readGenreDto => readGenreDto.Name)
+            RuleFor(genreDto => genreDto.Name)
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("{PropertyName} is required.");

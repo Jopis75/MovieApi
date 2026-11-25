@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MovieApi.Configurations;
 using MovieApi.Models;
 
 public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContext(options)
@@ -12,6 +13,8 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
     public DbSet<MovieActor> MovieActors { get; set; }
 
     public DbSet<MovieDetails> MovieDetails { get; set; }
+
+    public DbSet<MovieGenre> MovieGenres { get; set; }
 
     public DbSet<Review> Reviews { get; set; }
 
@@ -48,11 +51,6 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
         modelBuilder
             .Entity<Movie>()
             .HasKey(movie => movie.Id);
-        modelBuilder
-            .Entity<Movie>()
-            .HasOne(movie => movie.Genre)
-            .WithOne(genre => genre.Movie)
-            .HasForeignKey<Movie>(movie => movie.GenreId);
         modelBuilder
             .Entity<Movie>()
             .HasOne(movie => movie.MovieDetails)
@@ -114,6 +112,29 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
             .Property(movieDetails => movieDetails.Language)
             .IsRequired();
 
+        // MovieGenre.
+        modelBuilder
+            .Entity<MovieGenre>()
+            .ToTable("MovieGenre");
+        modelBuilder
+            .Entity<MovieGenre>()
+            .HasKey(movieGenre => movieGenre.Id);
+        modelBuilder
+            .Entity<MovieGenre>()
+            .HasKey(movieGenre => movieGenre.Id);
+        modelBuilder
+            .Entity<MovieGenre>()
+            .HasOne(movieGenre => movieGenre.Movie)
+            .WithMany(movie => movie.MovieGenres)
+            .HasForeignKey(movieGenre => movieGenre.MovieId)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+        modelBuilder
+            .Entity<MovieGenre>()
+            .HasOne(movieGenre => movieGenre.Genre)
+            .WithMany(genre => genre.MovieGenres)
+            .HasForeignKey(movieGenre => movieGenre.GenreId)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
         // Review.
         modelBuilder
             .Entity<Review>()
@@ -134,5 +155,14 @@ public class MovieDbContext(DbContextOptions<MovieDbContext> options) : DbContex
             .Entity<Review>()
             .Property(review => review.Comment)
             .IsRequired();
+
+        // Configurations.
+        modelBuilder.ApplyConfiguration(new ActorConfiguration());
+        modelBuilder.ApplyConfiguration(new GenreConfiguration());
+        modelBuilder.ApplyConfiguration(new MovieConfiguration());
+        modelBuilder.ApplyConfiguration(new MovieActorConfiguration());
+        modelBuilder.ApplyConfiguration(new MovieDetailsConfiguration());
+        modelBuilder.ApplyConfiguration(new MovieGenreConfiguration());
+        modelBuilder.ApplyConfiguration(new ReviewConfiguration());
     }
 }

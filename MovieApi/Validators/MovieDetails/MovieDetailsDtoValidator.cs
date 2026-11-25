@@ -3,25 +3,25 @@ using MovieApi.Dtos.MovieDetails;
 
 namespace MovieApi.Validators.MovieDetails
 {
-    public class ReadMovieDetailsDtoValidator : AbstractValidator<ReadMovieDetailsDto>
+    public class MovieDetailsDtoValidator : AbstractValidator<MovieDetailsDto>
     {
-        public ReadMovieDetailsDtoValidator()
+        public MovieDetailsDtoValidator()
         {
-            RuleFor(readMovieDetailsDto => readMovieDetailsDto.Id)
+            RuleFor(movieDetailsDto => movieDetailsDto.Id)
                 .GreaterThan(0)
                 .WithMessage("{PropertyName} must be greater than 0.");
 
-            RuleFor(readMovieDetailsDto => readMovieDetailsDto.Synopsis)
+            RuleFor(movieDetailsDto => movieDetailsDto.Synopsis)
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("{PropertyName} is required.");
 
-            RuleFor(readMovieDetailsDto => readMovieDetailsDto.Language)
+            RuleFor(movieDetailsDto => movieDetailsDto.Language)
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("{PropertyName} is required.");
 
-            RuleFor(readMovieDetailsDto => readMovieDetailsDto.Budget)
+            RuleFor(movieDetailsDto => movieDetailsDto.Budget)
                 .GreaterThan(0.0M)
                 .WithMessage("{PropertyName} must be greater than 0.0.");
         }

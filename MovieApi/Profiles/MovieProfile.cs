@@ -13,22 +13,22 @@ namespace MovieApi.Profiles
         public MovieProfile()
         {
             // Actor.
-            CreateMap<Actor, ReadActorDto>().ReverseMap();
+            CreateMap<Actor, ActorDto>().ReverseMap();
 
             // Genre.
-            CreateMap<Genre, ReadGenreDto>().ReverseMap();
+            CreateMap<Genre, GenreDto>().ReverseMap();
 
             // Movie.
             CreateMap<Movie, CreateMovieDto>().ReverseMap();
-            CreateMap<Movie, ReadMovieDto>().ReverseMap();
+            CreateMap<Movie, MovieDto>().ReverseMap();
             CreateMap<Movie, UpdateMovieDto>().ReverseMap();
             CreateMap<Movie, DeleteMovieDto>().ReverseMap();
 
             // MovieDetails.
-            CreateMap<MovieDetails, ReadMovieDetailsDto>().ReverseMap();
+            CreateMap<MovieDetails, MovieDetailsDto>().ReverseMap();
 
             // Review.
-            CreateMap<Review, ReadReviewDto>().ReverseMap();
+            CreateMap<Review, ReviewDto>().ReverseMap();
         }
     }
 }

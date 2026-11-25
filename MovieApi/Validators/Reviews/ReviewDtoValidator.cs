@@ -3,29 +3,29 @@ using MovieApi.Dtos.Reviews;
 
 namespace MovieApi.Validators.Reviews
 {
-    public class ReadReviewDtoValidator : AbstractValidator<ReadReviewDto>
+    public class ReviewDtoValidator : AbstractValidator<ReviewDto>
     {
-        public ReadReviewDtoValidator()
+        public ReviewDtoValidator()
         {
-            RuleFor(readReviewDto => readReviewDto.Id)
+            RuleFor(reviewDto => reviewDto.Id)
                 .GreaterThan(0)
                 .WithMessage("{PropertyName} must be greater than 0.");
 
-            RuleFor(readReviewDto => readReviewDto.ReviewerName)
+            RuleFor(reviewDto => reviewDto.ReviewerName)
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("{PropertyName} is required.");
 
-            RuleFor(readReviewDto => readReviewDto.Comment)
+            RuleFor(reviewDto => reviewDto.Comment)
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("{PropertyName} is required.");
 
-            RuleFor(readReviewDto => readReviewDto.Rating)
+            RuleFor(reviewDto => reviewDto.Rating)
                 .InclusiveBetween(1, 5)
                 .WithMessage("{PropertyName} must be between 1 and 5.");
 
-            RuleFor(readReviewDto => readReviewDto.MovieId)
+            RuleFor(reviewDto => reviewDto.MovieId)
                 .GreaterThan(0)
                 .WithMessage("{PropertyName} must be greater than 0.");
         }

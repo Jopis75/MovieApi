@@ -4,6 +4,6 @@
     {
         public string? Name { get; set; }
 
-        public virtual Movie? Movie { get; set; }
+        public virtual ICollection<MovieGenre> MovieGenres { get; set; } = [];
     }
 }

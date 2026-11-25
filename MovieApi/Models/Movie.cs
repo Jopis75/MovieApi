@@ -6,12 +6,8 @@
         
         public int Year { get; set; }
         
-        // Duration in seconds.
+        // Duration in minutes.
         public int Duration { get; set; }
-
-        public int GenreId { get; set; }
-
-        public virtual Genre? Genre { get; set; }
 
         public int MovieDetailsId { get; set; }
 
@@ -20,5 +16,7 @@
         public virtual ICollection<Review> Reviews { get; set; } = [];
 
         public virtual ICollection<MovieActor> MovieActors { get; set; } = [];
+
+        public virtual ICollection<MovieGenre> MovieGenres { get; set; } = [];
     }
 }

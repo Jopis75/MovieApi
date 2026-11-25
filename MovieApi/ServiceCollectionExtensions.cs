@@ -41,22 +41,22 @@ namespace MovieApi
         public static IServiceCollection AddValidators(this IServiceCollection serviceCollection)
         {
             // Actor.
-            serviceCollection.AddScoped<IValidator<ReadActorDto>, ReadActorDtoValidator>();
+            serviceCollection.AddScoped<IValidator<ActorDto>, ActorDtoValidator>();
 
             // Genre.
-            serviceCollection.AddScoped<IValidator<ReadGenreDto>, ReadGenreDtoValidator>();
+            serviceCollection.AddScoped<IValidator<GenreDto>, GenreDtoValidator>();
 
             // Movie.
             serviceCollection.AddScoped<IValidator<CreateMovieDto>, CreateMovieDtoValidator>();
-            serviceCollection.AddScoped<IValidator<ReadMovieDto>, ReadMovieDtoValidator>();
+            serviceCollection.AddScoped<IValidator<MovieDto>, MovieDtoValidator>();
             serviceCollection.AddScoped<IValidator<UpdateMovieDto>, UpdateMovieDtoValidator>();
             serviceCollection.AddScoped<IValidator<DeleteMovieDto>, DeleteMovieDtoValidator>();
 
             // MovieDetails.
-            serviceCollection.AddScoped<IValidator<ReadMovieDetailsDto>, ReadMovieDetailsDtoValidator>();
+            serviceCollection.AddScoped<IValidator<MovieDetailsDto>, MovieDetailsDtoValidator>();
 
             // Review.
-            serviceCollection.AddScoped<IValidator<ReadReviewDto>, ReadReviewDtoValidator>();
+            serviceCollection.AddScoped<IValidator<ReviewDto>, ReviewDtoValidator>();
 
             return serviceCollection;
         }
