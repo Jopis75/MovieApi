@@ -48,9 +48,9 @@ namespace MovieApi
 
             // Movie.
             serviceCollection.AddScoped<IValidator<CreateMovieDto>, CreateMovieDtoValidator>();
+            serviceCollection.AddScoped<IValidator<CreateMovieWithMovieDetailsDto>, CreateMovieWithMovieDetailsDtoValidator>();
             serviceCollection.AddScoped<IValidator<MovieDto>, MovieDtoValidator>();
             serviceCollection.AddScoped<IValidator<UpdateMovieDto>, UpdateMovieDtoValidator>();
-            serviceCollection.AddScoped<IValidator<DeleteMovieDto>, DeleteMovieDtoValidator>();
 
             // MovieDetails.
             serviceCollection.AddScoped<IValidator<MovieDetailsDto>, MovieDetailsDtoValidator>();

@@ -1,4 +1,9 @@
 ﻿namespace MovieApi.Dtos.Actors
 {
-    public record ActorDto(int Id, string? Name, int BirthYear);
+    public record class ActorDto : DtoBase
+    {
+        public string? Name { get; set; }
+        
+        public int BirthYear { get; set; }
+    }
 }

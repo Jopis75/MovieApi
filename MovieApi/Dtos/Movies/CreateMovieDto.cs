@@ -1,4 +1,13 @@
 ﻿namespace MovieApi.Dtos.Movies
 {
-    public record CreateMovieDto(string? Title, int Year, int Duration, int MovieDetailsId, int GenreId);
+    public record class CreateMovieDto
+    {
+        public string? Title { get; set; }
+        
+        public int Year { get; set; }
+        
+        public int Duration { get; set; }
+
+        public int MovieDetailsId { get; set; }
+    }
 }

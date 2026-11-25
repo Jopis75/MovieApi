@@ -1,4 +1,7 @@
 ﻿namespace MovieApi.Dtos.Genres
 {
-    public record GenreDto(int Id, string? Name);
+    public record class GenreDto : DtoBase
+    {
+        public string? Name { get; set; }
+    }
 }

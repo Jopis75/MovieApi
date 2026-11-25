@@ -25,14 +25,6 @@ namespace MovieApi.Validators.Movies
             RuleFor(updateMovieDto => updateMovieDto.Duration)
                 .GreaterThan(0)
                 .WithMessage("{PropertyName} must be greater than 0.");
-
-            RuleFor(updateMovieDto => updateMovieDto.MovieDetailsId)
-                .GreaterThan(0)
-                .WithMessage("{PropertyName} must be greater than 0.");
-
-            RuleFor(updateMovieDto => updateMovieDto.GenreId)
-                .GreaterThan(0)
-                .WithMessage("{PropertyName} must be greater than 0.");
         }
     }
 }

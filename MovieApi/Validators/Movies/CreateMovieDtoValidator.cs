@@ -25,10 +25,6 @@ namespace MovieApi.Validators.Movies
             RuleFor(createMovieDto => createMovieDto.MovieDetailsId)
                 .GreaterThan(0)
                 .WithMessage("{PropertyName} must be greater than 0.");
-
-            RuleFor(createMovieDto => createMovieDto.GenreId)
-                .GreaterThan(0)
-                .WithMessage("{PropertyName} must be greater than 0.");
         }
     }
 }

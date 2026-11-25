@@ -1,4 +1,11 @@
 ﻿namespace MovieApi.Dtos.MovieDetails
 {
-    public record MovieDetailsDto(int Id, string? Synopsis, string? Language, decimal Budget);
+    public record class MovieDetailsDto : DtoBase
+    {
+        public string? Synopsis { get; set; }
+        
+        public string? Language { get; set; }
+        
+        public decimal Budget { get; set; }
+    }
 }

@@ -24,10 +24,6 @@ namespace MovieApi.Validators.Reviews
             RuleFor(reviewDto => reviewDto.Rating)
                 .InclusiveBetween(1, 5)
                 .WithMessage("{PropertyName} must be between 1 and 5.");
-
-            RuleFor(reviewDto => reviewDto.MovieId)
-                .GreaterThan(0)
-                .WithMessage("{PropertyName} must be greater than 0.");
         }
     }
 }
