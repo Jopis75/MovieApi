@@ -68,6 +68,66 @@ namespace MovieApi.Configurations
                     Id = 10,
                     MovieId = 1,
                     ActorId = 10
+                },
+                new MovieActor
+                {
+                    Id = 11,
+                    MovieId = 2,
+                    ActorId = 1
+                },
+                new MovieActor
+                {
+                    Id = 12,
+                    MovieId = 2,
+                    ActorId = 2
+                },
+                new MovieActor
+                {
+                    Id = 13,
+                    MovieId = 2,
+                    ActorId = 11
+                },
+                new MovieActor
+                {
+                    Id = 14,
+                    MovieId = 2,
+                    ActorId = 5
+                },
+                new MovieActor
+                {
+                    Id = 15,
+                    MovieId = 2,
+                    ActorId = 8
+                },
+                new MovieActor
+                {
+                    Id = 16,
+                    MovieId = 2,
+                    ActorId = 12
+                },
+                new MovieActor
+                {
+                    Id = 17,
+                    MovieId = 2,
+                    ActorId = 13
+                },
+                new MovieActor
+                {
+                    Id = 18,
+                    MovieId = 2,
+                    ActorId = 6
+                },
+                new MovieActor
+                {
+                    Id = 19,
+                    MovieId = 2,
+                    ActorId = 14
+                },
+                new MovieActor
+                {
+                    Id = 20,
+                    MovieId = 2,
+                    ActorId = 10
                 }
             );
         }

@@ -14,8 +14,16 @@ namespace MovieApi.Configurations
                     Id = 1,
                     ReviewerName = "Jopis",
                     Rating = 5,
-                    Comment = "En kanon film! Måste bara ses.",
+                    Comment = "En kanon film! Mycket skratt. Måste bara ses.",
                     MovieId = 1
+                },
+                new Review
+                {
+                    Id = 2,
+                    ReviewerName = "Jopis",
+                    Rating = 5,
+                    Comment = "En fantastiskt bra uppföljare till Ted filmen. Lika rolig och spännande.",
+                    MovieId = 2
                 }
             );
         }

@@ -20,6 +20,18 @@ namespace MovieApi.Configurations
                     Id = 2,
                     MovieId = 1,
                     GenreId = 7
+                },
+                new MovieGenre
+                {
+                    Id = 3,
+                    MovieId = 2,
+                    GenreId = 3
+                },
+                new MovieGenre
+                {
+                    Id = 4,
+                    MovieId = 2,
+                    GenreId = 7
                 }
             );
         }

@@ -12,7 +12,14 @@ namespace MovieApi.Configurations
                 new MovieDetails
                 {
                     Id = 1,
-                    Synopsis = "In 1985, a lonely young boy named John Bennett makes a Christmas wish that his new teddy bear, Ted, will come to life and be his best friend forever. Miraculously, the wish comes true, and Ted becomes a national celebrity and John's inseparable companion.",
+                    Synopsis = "A man whose childhood wish of bringing his teddy bear to life came true must now decide whether that friendship is more important to him than his girlfriend.",
+                    Language = "English",
+                    Budget = 60000000.0M
+                },
+                new MovieDetails
+                {
+                    Id = 2,
+                    Synopsis = "Newlywed couple Ted and Tami-Lynn want to have a baby, but in order to qualify to be a parent, Ted will have to prove he's a person in a court of law.",
                     Language = "English",
                     Budget = 68000000.0M
                 }

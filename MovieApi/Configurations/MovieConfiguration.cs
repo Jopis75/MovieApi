@@ -16,6 +16,14 @@ namespace MovieApi.Configurations
                     Year = 2012,
                     Duration = 106,
                     MovieDetailsId = 1
+                },
+                new Movie
+                {
+                    Id = 2,
+                    Title = "Ted 2",
+                    Year = 2015,
+                    Duration = 116,
+                    MovieDetailsId = 2
                 }
             );
         }

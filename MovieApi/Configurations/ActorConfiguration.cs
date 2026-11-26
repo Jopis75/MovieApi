@@ -8,6 +8,17 @@ namespace MovieApi.Configurations
     {
         public void Configure(EntityTypeBuilder<Actor> builder)
         {
+            //• Seth MacFarlane – rösten till Ted / regissör
+            //• Mark Wahlberg – John Bennett
+            //• Amanda Seyfried – Samantha Jackson(advokaten)
+            //• Jessica Barth – Tami - Lynn
+            //• Giovanni Ribisi – Donny
+            //• Morgan Freeman – Patrick Meighan
+            //• John Slattery – Shep Wild
+            //• Patrick Warburton – Guy
+            //• Michael Dorn – Rick
+            //• Patrick Stewart – Berättare(röst)
+
             builder.HasData(
                 new Actor
                 {
@@ -68,6 +79,30 @@ namespace MovieApi.Configurations
                     Id = 10,
                     Name = "Patrick Stewart",
                     BirthYear = 1940
+                },
+                new Actor
+                {
+                    Id = 11,
+                    Name = "Amanda Seyfried",
+                    BirthYear = 1985
+                },
+                new Actor
+                {
+                    Id = 12,
+                    Name = "Morgan Freeman",
+                    BirthYear = 1937
+                },
+                new Actor
+                {
+                    Id = 13,
+                    Name = "John Slattery",
+                    BirthYear = 1962
+                },
+                new Actor
+                {
+                    Id = 14,
+                    Name = "Michael Dorn",
+                    BirthYear = 1952
                 }
             );
         }
