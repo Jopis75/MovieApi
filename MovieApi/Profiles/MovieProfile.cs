@@ -44,6 +44,7 @@ namespace MovieApi.Profiles
 
             // MovieDetails.
             CreateMap<MovieDetails, CreateMovieWithMovieDetailsAndGenresDto>().ReverseMap();
+            CreateMap<MovieDetails, CreateMovieWithMovieDetailsDto>().ReverseMap();
             CreateMap<MovieDetails, MovieDetailsDto>().ReverseMap();
             CreateMap<MovieDetails, UpdateMovieWithMovieDetailsDto>().ReverseMap();
             CreateMap<UpdateMovieWithMovieDetailsDto, MovieDetails>()
