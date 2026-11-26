@@ -7,7 +7,12 @@ using MovieApi.Models;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ActorsController(MovieDbContext context, IMapper mapper, IValidator<CreateActorDto> createActorDtoValidator, IValidator<CreateActorWithMovieDto> createActorWithMovieDtoValidator, IValidator<UpdateActorDto> updateActorDtoValidator) : ControllerBase
+public class ActorsController(
+    MovieDbContext context,
+    IMapper mapper,
+    IValidator<CreateActorDto> createActorDtoValidator,
+    IValidator<CreateActorWithMovieDto> createActorWithMovieDtoValidator,
+    IValidator<UpdateActorDto> updateActorDtoValidator) : ControllerBase
 {
     [HttpPost]
     [Route("CreateAsync")]
@@ -27,10 +32,10 @@ public class ActorsController(MovieDbContext context, IMapper mapper, IValidator
 
             if (!validationResult.IsValid)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);    
+                return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
             }
 
-            var actor = mapper.Map<Actor>(createActorDto);          
+            var actor = mapper.Map<Actor>(createActorDto);
 
             await context.Actors.AddAsync(actor);
             await context.SaveChangesAsync();
@@ -98,9 +103,14 @@ public class ActorsController(MovieDbContext context, IMapper mapper, IValidator
                 return StatusCode(StatusCodes.Status400BadRequest);
             }
 
+            if (id <= 0)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "id must be greater than 0.");
+            }
+
             var actor = await context.Actors.FindAsync(id);
 
-            if (actor == null || id <= 0)
+            if (actor == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }
@@ -155,6 +165,11 @@ public class ActorsController(MovieDbContext context, IMapper mapper, IValidator
     {
         try
         {
+            if (id <= 0)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "id must be greater than 0.");
+            }
+
             var actor = await context
                 .Actors
                 .Include(actor => actor.MovieActors)
@@ -202,17 +217,6 @@ public class ActorsController(MovieDbContext context, IMapper mapper, IValidator
             await context.SaveChangesAsync();
 
             return StatusCode(StatusCodes.Status204NoContent);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!context.Actors.Any(actor => actor.Id == updateActorDto.Id))
-            {
-                return StatusCode(StatusCodes.Status404NotFound);
-            }
-            else
-            {
-                throw;
-            }
         }
         catch (Exception ex)
         {

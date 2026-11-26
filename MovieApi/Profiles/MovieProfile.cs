@@ -3,7 +3,7 @@ using MovieApi.Dtos.Actors;
 using MovieApi.Dtos.Genres;
 using MovieApi.Dtos.MovieActors;
 using MovieApi.Dtos.MovieDetails;
-using MovieApi.Dtos.MovieGenre;
+using MovieApi.Dtos.MovieGenres;
 using MovieApi.Dtos.Movies;
 using MovieApi.Dtos.Reviews;
 using MovieApi.Models;
@@ -46,6 +46,7 @@ namespace MovieApi.Profiles
             CreateMap<MovieDetails, CreateMovieWithMovieDetailsAndGenresDto>().ReverseMap();
             CreateMap<MovieDetails, CreateMovieWithMovieDetailsDto>().ReverseMap();
             CreateMap<MovieDetails, MovieDetailsDto>().ReverseMap();
+            CreateMap<MovieDetails, UpdateMovieDetailsDto>().ReverseMap();
             CreateMap<MovieDetails, UpdateMovieWithMovieDetailsDto>().ReverseMap();
             CreateMap<UpdateMovieWithMovieDetailsDto, MovieDetails>()
                 .ForMember(movieDetails => movieDetails.Id,

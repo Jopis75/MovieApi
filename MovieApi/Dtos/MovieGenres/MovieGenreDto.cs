@@ -1,4 +1,4 @@
-﻿namespace MovieApi.Dtos.MovieGenre
+﻿namespace MovieApi.Dtos.MovieGenres
 {
     public record class MovieGenreDto : DtoBase
     {

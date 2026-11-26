@@ -2,16 +2,18 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MovieApi.Dtos.Actors;
 using MovieApi.Dtos.Reviews;
 using MovieApi.Models;
-using MovieApi.Validators.Actors;
 
 namespace MovieApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReviewsController(MovieDbContext context, IMapper mapper, IValidator<CreateReviewDto> createReviewDtoValidator, IValidator<UpdateReviewDto> updateReviewDtoValidator) : ControllerBase
+    public class ReviewsController(
+        MovieDbContext context,
+        IMapper mapper,
+        IValidator<CreateReviewDto> createReviewDtoValidator,
+        IValidator<UpdateReviewDto> updateReviewDtoValidator) : ControllerBase
     {
         [HttpPost]
         [Route("CreateAsync")]
@@ -57,9 +59,14 @@ namespace MovieApi.Controllers
         {
             try
             {
-                if (id == null || id <= 0)
+                if (id == null)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest);
+                }
+
+                if (id <= 0)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "id must be greater than 0.");
                 }
 
                 var review = await context.Reviews.FindAsync(id);
@@ -110,6 +117,11 @@ namespace MovieApi.Controllers
         {
             try
             {
+                if (id <= 0)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "id must be greater than 0.");
+                }
+
                 var review = await context
                     .Reviews
                     .Include(review => review.Movie)
@@ -156,17 +168,6 @@ namespace MovieApi.Controllers
                 await context.SaveChangesAsync();
 
                 return StatusCode(StatusCodes.Status204NoContent);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!context.Reviews.Any(review => review.Id == updateReviewDto.Id))
-                {
-                    return StatusCode(StatusCodes.Status404NotFound);
-                }
-                else
-                {
-                    throw;
-                }
             }
             catch (Exception ex)
             {

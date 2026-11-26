@@ -2,12 +2,20 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MovieApi.Dtos.MovieDetails;
 using MovieApi.Dtos.Movies;
 using MovieApi.Models;
 
 [Route("api/[controller]")]
 [ApiController]
-public class MoviesController(MovieDbContext context, IMapper mapper, IValidator<CreateMovieWithMovieDetailsDto> createMovieWithMovieDetailsDtoValidator, IValidator<CreateMovieWithMovieDetailsAndGenresDto> createMovieWithMovieDetailsAndGenresDtoValidator, IValidator<UpdateMovieWithMovieDetailsDto> updateMovieWithMoviedDetailsDtoValidator) : ControllerBase
+public class MoviesController(
+    MovieDbContext context,
+    IMapper mapper,
+    IValidator<CreateMovieWithMovieDetailsDto> createMovieWithMovieDetailsDtoValidator,
+    IValidator<CreateMovieWithMovieDetailsAndGenresDto> createMovieWithMovieDetailsAndGenresDtoValidator,
+    IValidator<UpdateMovieWithMovieDetailsDto> updateMovieWithMovieDetailsDtoValidator,
+    IValidator<UpdateMovieDetailsDto> updateMovieDetailsDtoValidator,
+    IValidator<UpdateMovieGenresDto> updateMovieGenresDtoValidator) : ControllerBase
 {
     [HttpPost]
     [Route("CreateWithMovieDetailsAndGenresAsync")]
@@ -105,9 +113,14 @@ public class MoviesController(MovieDbContext context, IMapper mapper, IValidator
     {
         try
         {
-            if (id == null || id <= 0)
+            if (id == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
+            }
+
+            if (id <= 0)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "id must be greater than 0.");
             }
 
             var movie = await context.Movies.FindAsync(id);
@@ -163,6 +176,11 @@ public class MoviesController(MovieDbContext context, IMapper mapper, IValidator
     {
         try
         {
+            if (id <= 0)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "id must be greater than 0.");
+            }
+
             var movie = await context
                 .Movies
                 .Include(movie => movie.MovieDetails)
@@ -188,6 +206,79 @@ public class MoviesController(MovieDbContext context, IMapper mapper, IValidator
     }
 
     [HttpPut]
+    [Route("UpdateGenresAsync")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateGenresAsync(UpdateMovieGenresDto updateMovieGenresDto)
+    {
+        try
+        {
+            if (updateMovieGenresDto == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest);
+            }
+
+            var validationResult = await updateMovieGenresDtoValidator.ValidateAsync(updateMovieGenresDto);
+
+            if (!validationResult.IsValid)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+            }
+
+            var oldMovieGenres = await context.MovieGenres.Where(movieGenre => movieGenre.MovieId == updateMovieGenresDto.MovieId).ToListAsync();
+
+            context.MovieGenres.RemoveRange(oldMovieGenres);
+            await context.SaveChangesAsync();
+
+            var newMovieGenres = updateMovieGenresDto.GenreIds.Select(genreId => new MovieGenre { MovieId = updateMovieGenresDto.MovieId, GenreId = genreId }).ToList();
+
+            await context.MovieGenres.AddRangeAsync(newMovieGenres);
+            await context.SaveChangesAsync();
+
+            return StatusCode(StatusCodes.Status204NoContent);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpPut]
+    [Route("UpdateMovieDetailsAsync")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateMovieDetailsAsync(UpdateMovieDetailsDto updateMovieDetailsDto)
+    {
+        try
+        {
+            if (updateMovieDetailsDto == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest);
+            }
+
+            var validationResult = await updateMovieDetailsDtoValidator.ValidateAsync(updateMovieDetailsDto);
+
+            if (!validationResult.IsValid)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+            }
+
+            var movieDetails = mapper.Map<MovieDetails>(updateMovieDetailsDto);
+
+            context.MovieDetails.Update(movieDetails);
+            await context.SaveChangesAsync();
+
+            return StatusCode(StatusCodes.Status204NoContent);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpPut]
     [Route("UpdateWithMovieDetailsAsync")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -201,7 +292,7 @@ public class MoviesController(MovieDbContext context, IMapper mapper, IValidator
                 return StatusCode(StatusCodes.Status400BadRequest);
             }
 
-            var validationResult = await updateMovieWithMoviedDetailsDtoValidator.ValidateAsync(updateMovieWithMovieDetailsDto);
+            var validationResult = await updateMovieWithMovieDetailsDtoValidator.ValidateAsync(updateMovieWithMovieDetailsDto);
 
             if (!validationResult.IsValid)
             {
@@ -219,17 +310,6 @@ public class MoviesController(MovieDbContext context, IMapper mapper, IValidator
             await context.SaveChangesAsync();
 
             return StatusCode(StatusCodes.Status204NoContent);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!context.Movies.Any(movie => movie.Id == updateMovieWithMovieDetailsDto.Id))
-            {
-                return StatusCode(StatusCodes.Status404NotFound);
-            }
-            else
-            {
-                throw;
-            }
         }
         catch (Exception ex)
         {
