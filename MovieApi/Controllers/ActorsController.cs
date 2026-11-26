@@ -1,98 +1,222 @@
+using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MovieApi.Dtos.Actors;
 using MovieApi.Models;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ActorsController : ControllerBase
+public class ActorsController(MovieDbContext context, IMapper mapper, IValidator<CreateActorDto> createActorDtoValidator, IValidator<CreateActorWithMovieDto> createActorWithMovieDtoValidator, IValidator<UpdateActorDto> updateActorDtoValidator) : ControllerBase
 {
-    private readonly MovieDbContext _context;
-    public ActorsController(MovieDbContext context)
+    [HttpPost]
+    [Route("CreateAsync")]
+    [ProducesResponseType(typeof(ActorDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ActorDto>> CreateAsync(CreateActorDto createActorDto)
     {
-        _context = context;
-    }
-
-    // GET: api/Actor
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Actor>>> GetActor()
-    {
-        return await _context.Actors.ToListAsync();
-    }
-
-    // GET: api/Actor/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Actor>> GetActor(int id)
-    {
-        var actor = await _context.Actors.FindAsync(id);
-
-        if (actor == null)
-        {
-            return NotFound();
-        }
-
-        return actor;
-    }
-
-    // PUT: api/Actor/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutActor(int? id, Actor actor)
-    {
-        if (id != actor.Id)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(actor).State = EntityState.Modified;
-
         try
         {
-            await _context.SaveChangesAsync();
+            if (createActorDtoValidator == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest);
+            }
+
+            var validationResult = await createActorDtoValidator.ValidateAsync(createActorDto);
+
+            if (!validationResult.IsValid)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+            }
+
+            var actor = mapper.Map<Actor>(createActorDto);
+
+            await context.Actors.AddAsync(actor);
+            await context.SaveChangesAsync();
+
+            return StatusCode(StatusCodes.Status201Created, mapper.Map<ActorDto>(actor));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpPost]
+    [Route("CreateWithMovieAsync")]
+    [ProducesResponseType(typeof(ActorDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ActorDto>> CreateWithMovieAsync(CreateActorWithMovieDto createActorWithMovieDto)
+    {
+        try
+        {
+            if (createActorWithMovieDtoValidator == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest);
+            }
+
+            var validationResult = await createActorWithMovieDtoValidator.ValidateAsync(createActorWithMovieDto);
+
+            if (!validationResult.IsValid)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+            }
+
+            var actor = mapper.Map<Actor>(createActorWithMovieDto);
+
+            await context.Actors.AddAsync(actor);
+            await context.SaveChangesAsync();
+
+            var movieActor = mapper.Map<MovieActor>(createActorWithMovieDto);
+            movieActor.ActorId = actor.Id;
+
+            await context.MovieActors.AddAsync(movieActor);
+            await context.SaveChangesAsync();
+
+            return StatusCode(StatusCodes.Status201Created, mapper.Map<ActorDto>(actor));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpDelete]
+    [Route("DeleteAsync/{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteAsync(int? id)
+    {
+        try
+        {
+            if (id == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest);
+            }
+
+            var actor = await context.Actors.FindAsync(id);
+
+            if (actor == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+
+            var movieActors = await context
+                .MovieActors
+                .Where(movieActor => movieActor.ActorId == id)
+                .ToListAsync();
+
+            context.MovieActors.RemoveRange(movieActors);
+            await context.SaveChangesAsync();
+
+            context.Actors.Remove(actor);
+            await context.SaveChangesAsync();
+
+            return StatusCode(StatusCodes.Status204NoContent);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("ReadAllAsync")]
+    [ProducesResponseType(typeof(IEnumerable<ActorWithMoviesDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<ActorWithMoviesDto>>> ReadAllAsync()
+    {
+        try
+        {
+            var actors = await context
+                .Actors
+                .Include(actor => actor.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Movie)
+                .ToListAsync();
+
+            return StatusCode(StatusCodes.Status200OK, actors.Select(mapper.Map<ActorWithMoviesDto>));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("ReadByIdAsync")]
+    [ProducesResponseType(typeof(ActorWithMoviesDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ActorWithMoviesDto>> ReadByIdAsync(int id)
+    {
+        try
+        {
+            var actor = await context
+                .Actors
+                .Include(actor => actor.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Movie)
+                .Where(actor => actor.Id == id)
+                .SingleOrDefaultAsync();
+
+            if (actor == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, mapper.Map<ActorWithMoviesDto>(actor));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpPut]
+    [Route("UpdateAsync")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateAsync(UpdateActorDto updateActorDto)
+    {
+        try
+        {
+            if (updateActorDto == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest);
+            }
+
+            var validationResult = await updateActorDtoValidator.ValidateAsync(updateActorDto);
+
+            if (!validationResult.IsValid)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+            }
+
+            var actor = mapper.Map<Actor>(updateActorDto);
+
+            context.Actors.Update(actor);
+            await context.SaveChangesAsync();
+
+            return StatusCode(StatusCodes.Status204NoContent);
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!ActorExists(id))
+            if (!context.Actors.Any(actor => actor.Id == updateActorDto.Id))
             {
-                return NotFound();
+                return StatusCode(StatusCodes.Status404NotFound);
             }
             else
             {
                 throw;
             }
         }
-
-        return NoContent();
-    }
-
-    // POST: api/Actor
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
-    public async Task<ActionResult<Actor>> PostActor(Actor actor)
-    {
-        _context.Actors.Add(actor);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetActor", new { id = actor.Id }, actor);
-    }
-
-    // DELETE: api/Actor/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteActor(int? id)
-    {
-        var actor = await _context.Actors.FindAsync(id);
-        if (actor == null)
+        catch (Exception ex)
         {
-            return NotFound();
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
-
-        _context.Actors.Remove(actor);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    private bool ActorExists(int? id)
-    {
-        return _context.Actors.Any(e => e.Id == id);
     }
 }

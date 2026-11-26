@@ -171,7 +171,7 @@ public class MoviesController(MovieDbContext context, IMapper mapper, IValidator
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!context.Movies.Any(e => e.Id == updateMovieDto.Id))
+            if (!context.Movies.Any(movie => movie.Id == updateMovieDto.Id))
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }

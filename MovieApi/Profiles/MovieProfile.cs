@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using MovieApi.Dtos.Actors;
 using MovieApi.Dtos.Genres;
+using MovieApi.Dtos.MovieActors;
 using MovieApi.Dtos.MovieDetails;
+using MovieApi.Dtos.MovieGenre;
 using MovieApi.Dtos.Movies;
 using MovieApi.Dtos.Reviews;
 using MovieApi.Models;
@@ -13,7 +15,14 @@ namespace MovieApi.Profiles
         public MovieProfile()
         {
             // Actor.
+            CreateMap<Actor, CreateActorDto>().ReverseMap();
+            CreateMap<Actor, CreateActorWithMovieDto>().ReverseMap();
             CreateMap<Actor, ActorDto>().ReverseMap();
+            CreateMap<Actor, ActorWithMoviesDto>().ReverseMap();
+            CreateMap<Actor, ActorWithMoviesDto>()
+                .ForMember(actorWithMoviesDto => actorWithMoviesDto.Movies,
+                    cfg => cfg.MapFrom(actor => actor.MovieActors.Select(movieActor => movieActor.Movie).ToList()));
+            CreateMap<Actor, UpdateActorDto>().ReverseMap();
 
             // Genre.
             CreateMap<Genre, GenreDto>().ReverseMap();
@@ -23,15 +32,22 @@ namespace MovieApi.Profiles
             CreateMap<Movie, CreateMovieWithMovieDetailsDto>().ReverseMap();
             CreateMap<Movie, MovieDto>().ReverseMap();
             CreateMap<Movie, MovieDto>()
-              .ForMember(movieDto => movieDto.Actors,
-                cfg => cfg.MapFrom(movie => movie.MovieActors.Select(movieActor => movieActor.Actor).ToList()))
-              .ForMember(movieDto => movieDto.Genres,
-                cfg => cfg.MapFrom(movie => movie.MovieGenres.Select(movieGenre => movieGenre.Genre).ToList()));
+                .ForMember(movieDto => movieDto.Actors,
+                    cfg => cfg.MapFrom(movie => movie.MovieActors.Select(movieActor => movieActor.Actor).ToList()))
+                .ForMember(movieDto => movieDto.Genres,
+                    cfg => cfg.MapFrom(movie => movie.MovieGenres.Select(movieGenre => movieGenre.Genre).ToList()));
             CreateMap<Movie, UpdateMovieDto>().ReverseMap();
+
+            // MovieActor.
+            CreateMap<MovieActor, CreateActorWithMovieDto>().ReverseMap();
+            CreateMap<MovieActor, MovieActorDto>().ReverseMap();
 
             // MovieDetails.
             CreateMap<MovieDetails, CreateMovieWithMovieDetailsDto>().ReverseMap();
             CreateMap<MovieDetails, MovieDetailsDto>().ReverseMap();
+
+            // MovieGenre.
+            CreateMap<MovieGenre, MovieGenreDto>().ReverseMap();
 
             // Review.
             CreateMap<Review, ReviewDto>().ReverseMap();
