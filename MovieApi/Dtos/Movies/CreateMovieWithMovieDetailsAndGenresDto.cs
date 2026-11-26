@@ -1,6 +1,6 @@
 ﻿namespace MovieApi.Dtos.Movies
 {
-    public record class CreateMovieWithMovieDetailsDto
+    public record class CreateMovieWithMovieDetailsAndGenresDto
     {
         public string? Title { get; set; }
 
@@ -13,5 +13,7 @@
         public string? Language { get; set; }
 
         public decimal Budget { get; set; }
+
+        public List<int> GenreIds { get; set; } = [];
     }
 }

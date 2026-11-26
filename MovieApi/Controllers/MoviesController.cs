@@ -7,14 +7,14 @@ using MovieApi.Models;
 
 [Route("api/[controller]")]
 [ApiController]
-public class MoviesController(MovieDbContext context, IMapper mapper, IValidator<CreateMovieWithMovieDetailsDto> createMovieWithMovieDetailsDtoValidator, IValidator<UpdateMovieDto> updateMovieDtoValidator) : ControllerBase
+public class MoviesController(MovieDbContext context, IMapper mapper, IValidator<CreateMovieWithMovieDetailsAndGenresDto> createMovieWithMovieDetailsDtoValidator, IValidator<UpdateMovieDto> updateMovieDtoValidator) : ControllerBase
 {
     [HttpPost]
     [Route("CreateAsync")]
     [ProducesResponseType(typeof(MovieDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Movie>> CreateAsync(CreateMovieWithMovieDetailsDto createMovieWithMovieDetailsDto)
+    public async Task<ActionResult<MovieDto>> CreateAsync(CreateMovieWithMovieDetailsAndGenresDto createMovieWithMovieDetailsDto)
     {
         try
         {
@@ -39,6 +39,10 @@ public class MoviesController(MovieDbContext context, IMapper mapper, IValidator
             movie.MovieDetailsId = movieDetails.Id;
 
             var entityEntryMovie = await context.Movies.AddAsync(movie);
+            await context.SaveChangesAsync();
+
+            var movieGenres = createMovieWithMovieDetailsDto.GenreIds.Select(genreId => new MovieGenre { MovieId = movie.Id, GenreId = genreId });
+            await context.MovieGenres.AddRangeAsync(movieGenres);
             await context.SaveChangesAsync();
 
             return StatusCode(StatusCodes.Status201Created, mapper.Map<MovieDto>(entityEntryMovie.Entity));

@@ -51,7 +51,7 @@ namespace MovieApi
 
             // Movie.
             serviceCollection.AddScoped<IValidator<CreateMovieDto>, CreateMovieDtoValidator>();
-            serviceCollection.AddScoped<IValidator<CreateMovieWithMovieDetailsDto>, CreateMovieWithMovieDetailsDtoValidator>();
+            serviceCollection.AddScoped<IValidator<CreateMovieWithMovieDetailsAndGenresDto>, CreateMovieWithMovieDetailsAndGenresDtoValidator>();
             serviceCollection.AddScoped<IValidator<MovieDto>, MovieDtoValidator>();
             serviceCollection.AddScoped<IValidator<UpdateMovieDto>, UpdateMovieDtoValidator>();
 
@@ -59,7 +59,9 @@ namespace MovieApi
             serviceCollection.AddScoped<IValidator<MovieDetailsDto>, MovieDetailsDtoValidator>();
 
             // Review.
+            serviceCollection.AddScoped<IValidator<CreateReviewDto>, CreateReviewDtoValidator>();
             serviceCollection.AddScoped<IValidator<ReviewDto>, ReviewDtoValidator>();
+            serviceCollection.AddScoped<IValidator<UpdateReviewDto>, UpdateReviewDtoValidator>();
 
             return serviceCollection;
         }

@@ -29,7 +29,7 @@ namespace MovieApi.Profiles
 
             // Movie.
             CreateMap<Movie, CreateMovieDto>().ReverseMap();
-            CreateMap<Movie, CreateMovieWithMovieDetailsDto>().ReverseMap();
+            CreateMap<Movie, CreateMovieWithMovieDetailsAndGenresDto>().ReverseMap();
             CreateMap<Movie, MovieDto>().ReverseMap();
             CreateMap<Movie, MovieDto>()
                 .ForMember(movieDto => movieDto.Actors,
@@ -43,14 +43,17 @@ namespace MovieApi.Profiles
             CreateMap<MovieActor, MovieActorDto>().ReverseMap();
 
             // MovieDetails.
-            CreateMap<MovieDetails, CreateMovieWithMovieDetailsDto>().ReverseMap();
+            CreateMap<MovieDetails, CreateMovieWithMovieDetailsAndGenresDto>().ReverseMap();
             CreateMap<MovieDetails, MovieDetailsDto>().ReverseMap();
 
             // MovieGenre.
             CreateMap<MovieGenre, MovieGenreDto>().ReverseMap();
 
             // Review.
+            CreateMap<Review, CreateReviewDto>().ReverseMap();
             CreateMap<Review, ReviewDto>().ReverseMap();
+            CreateMap<Review, ReviewWithMovieDto>().ReverseMap();
+            CreateMap<Review, UpdateReviewDto>().ReverseMap();
         }
     }
 }

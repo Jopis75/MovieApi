@@ -27,10 +27,10 @@ public class ActorsController(MovieDbContext context, IMapper mapper, IValidator
 
             if (!validationResult.IsValid)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+                return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);    
             }
 
-            var actor = mapper.Map<Actor>(createActorDto);
+            var actor = mapper.Map<Actor>(createActorDto);          
 
             await context.Actors.AddAsync(actor);
             await context.SaveChangesAsync();
