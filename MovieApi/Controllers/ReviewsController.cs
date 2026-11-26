@@ -57,7 +57,7 @@ namespace MovieApi.Controllers
         {
             try
             {
-                if (id == null)
+                if (id == null || id <= 0)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest);
                 }

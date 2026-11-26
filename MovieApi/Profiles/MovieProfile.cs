@@ -36,7 +36,7 @@ namespace MovieApi.Profiles
                     cfg => cfg.MapFrom(movie => movie.MovieActors.Select(movieActor => movieActor.Actor).ToList()))
                 .ForMember(movieDto => movieDto.Genres,
                     cfg => cfg.MapFrom(movie => movie.MovieGenres.Select(movieGenre => movieGenre.Genre).ToList()));
-            CreateMap<Movie, UpdateMovieDto>().ReverseMap();
+            CreateMap<Movie, UpdateMovieWithMovieDetailsDto>().ReverseMap();
 
             // MovieActor.
             CreateMap<MovieActor, CreateActorWithMovieDto>().ReverseMap();
@@ -45,6 +45,10 @@ namespace MovieApi.Profiles
             // MovieDetails.
             CreateMap<MovieDetails, CreateMovieWithMovieDetailsAndGenresDto>().ReverseMap();
             CreateMap<MovieDetails, MovieDetailsDto>().ReverseMap();
+            CreateMap<MovieDetails, UpdateMovieWithMovieDetailsDto>().ReverseMap();
+            CreateMap<UpdateMovieWithMovieDetailsDto, MovieDetails>()
+                .ForMember(movieDetails => movieDetails.Id,
+                    cfg => cfg.MapFrom(updateMovieDto => updateMovieDto.MovieDetailsId));
 
             // MovieGenre.
             CreateMap<MovieGenre, MovieGenreDto>().ReverseMap();

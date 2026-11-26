@@ -100,7 +100,7 @@ public class ActorsController(MovieDbContext context, IMapper mapper, IValidator
 
             var actor = await context.Actors.FindAsync(id);
 
-            if (actor == null)
+            if (actor == null || id <= 0)
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }

@@ -7,45 +7,46 @@ using MovieApi.Models;
 
 [Route("api/[controller]")]
 [ApiController]
-public class MoviesController(MovieDbContext context, IMapper mapper, IValidator<CreateMovieWithMovieDetailsAndGenresDto> createMovieWithMovieDetailsDtoValidator, IValidator<UpdateMovieDto> updateMovieDtoValidator) : ControllerBase
+public class MoviesController(MovieDbContext context, IMapper mapper, IValidator<CreateMovieWithMovieDetailsAndGenresDto> createMovieWithMovieDetailsDtoValidator, IValidator<UpdateMovieWithMovieDetailsDto> updateMovieWithMoviedDetailsDtoValidator) : ControllerBase
 {
     [HttpPost]
     [Route("CreateAsync")]
     [ProducesResponseType(typeof(MovieDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<MovieDto>> CreateAsync(CreateMovieWithMovieDetailsAndGenresDto createMovieWithMovieDetailsDto)
+    public async Task<ActionResult<MovieDto>> CreateAsync(CreateMovieWithMovieDetailsAndGenresDto createMovieWithMovieDetailsAndGenresDto)
     {
         try
         {
-            if (createMovieWithMovieDetailsDto == null)
+            if (createMovieWithMovieDetailsAndGenresDto == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
             }
 
-            var validationResult = await createMovieWithMovieDetailsDtoValidator.ValidateAsync(createMovieWithMovieDetailsDto);
+            var validationResult = await createMovieWithMovieDetailsDtoValidator.ValidateAsync(createMovieWithMovieDetailsAndGenresDto);
 
             if (!validationResult.IsValid)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
             }
 
-            var movieDetails = mapper.Map<MovieDetails>(createMovieWithMovieDetailsDto);
+            var movieDetails = mapper.Map<MovieDetails>(createMovieWithMovieDetailsAndGenresDto);
 
-            var entityEntryMovieDetails = await context.MovieDetails.AddAsync(movieDetails);
+            await context.MovieDetails.AddAsync(movieDetails);
             await context.SaveChangesAsync();
 
-            var movie = mapper.Map<Movie>(createMovieWithMovieDetailsDto);
+            var movie = mapper.Map<Movie>(createMovieWithMovieDetailsAndGenresDto);
             movie.MovieDetailsId = movieDetails.Id;
 
-            var entityEntryMovie = await context.Movies.AddAsync(movie);
+            await context.Movies.AddAsync(movie);
             await context.SaveChangesAsync();
 
-            var movieGenres = createMovieWithMovieDetailsDto.GenreIds.Select(genreId => new MovieGenre { MovieId = movie.Id, GenreId = genreId });
+            var movieGenres = createMovieWithMovieDetailsAndGenresDto.GenreIds.Select(genreId => new MovieGenre { MovieId = movie.Id, GenreId = genreId });
+            
             await context.MovieGenres.AddRangeAsync(movieGenres);
             await context.SaveChangesAsync();
 
-            return StatusCode(StatusCodes.Status201Created, mapper.Map<MovieDto>(entityEntryMovie.Entity));
+            return StatusCode(StatusCodes.Status201Created, mapper.Map<MovieDto>(movie));
         }
         catch (Exception ex)
         {
@@ -63,7 +64,7 @@ public class MoviesController(MovieDbContext context, IMapper mapper, IValidator
     {
         try
         {
-            if (id == null)
+            if (id == null || id <= 0)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
             }
@@ -150,32 +151,37 @@ public class MoviesController(MovieDbContext context, IMapper mapper, IValidator
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateAsync(UpdateMovieDto updateMovieDto)
+    public async Task<IActionResult> UpdateAsync(UpdateMovieWithMovieDetailsDto updateMovieWithMovieDetailsDto)
     {
         try
         {
-            if (updateMovieDto == null)
+            if (updateMovieWithMovieDetailsDto == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
             }
 
-            var validationResult = await updateMovieDtoValidator.ValidateAsync(updateMovieDto);
+            var validationResult = await updateMovieWithMoviedDetailsDtoValidator.ValidateAsync(updateMovieWithMovieDetailsDto);
 
             if (!validationResult.IsValid)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
             }
 
-            var movie = mapper.Map<Movie>(updateMovieDto);
+            var movie = mapper.Map<Movie>(updateMovieWithMovieDetailsDto);
 
             context.Movies.Update(movie);
+            await context.SaveChangesAsync();
+
+            var movieDetails = mapper.Map<MovieDetails>(updateMovieWithMovieDetailsDto);
+
+            context.MovieDetails.Update(movieDetails);
             await context.SaveChangesAsync();
 
             return StatusCode(StatusCodes.Status204NoContent);
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!context.Movies.Any(movie => movie.Id == updateMovieDto.Id))
+            if (!context.Movies.Any(movie => movie.Id == updateMovieWithMovieDetailsDto.Id))
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }
