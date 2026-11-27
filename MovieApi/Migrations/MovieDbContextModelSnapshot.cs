@@ -14,7 +14,7 @@ partial class MovieDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261125120949_Initial";
+    public override string LastMigrationId => "20261126155816_Initial";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -103,6 +103,30 @@ partial class MovieDbContextModelSnapshot : ModelSnapshot
                         Id = 10,
                         BirthYear = 1940,
                         Name = "Patrick Stewart"
+                    },
+                    new
+                    {
+                        Id = 11,
+                        BirthYear = 1985,
+                        Name = "Amanda Seyfried"
+                    },
+                    new
+                    {
+                        Id = 12,
+                        BirthYear = 1937,
+                        Name = "Morgan Freeman"
+                    },
+                    new
+                    {
+                        Id = 13,
+                        BirthYear = 1962,
+                        Name = "John Slattery"
+                    },
+                    new
+                    {
+                        Id = 14,
+                        BirthYear = 1952,
+                        Name = "Michael Dorn"
                     });
             });
 
@@ -211,6 +235,14 @@ partial class MovieDbContextModelSnapshot : ModelSnapshot
                         MovieDetailsId = 1,
                         Title = "Ted",
                         Year = 2012
+                    },
+                    new
+                    {
+                        Id = 2,
+                        Duration = 116,
+                        MovieDetailsId = 2,
+                        Title = "Ted 2",
+                        Year = 2015
                     });
             });
 
@@ -296,6 +328,66 @@ partial class MovieDbContextModelSnapshot : ModelSnapshot
                         Id = 10,
                         ActorId = 10,
                         MovieId = 1
+                    },
+                    new
+                    {
+                        Id = 11,
+                        ActorId = 1,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 12,
+                        ActorId = 2,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 13,
+                        ActorId = 11,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 14,
+                        ActorId = 5,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 15,
+                        ActorId = 8,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 16,
+                        ActorId = 12,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 17,
+                        ActorId = 13,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 18,
+                        ActorId = 6,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 19,
+                        ActorId = 14,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 20,
+                        ActorId = 10,
+                        MovieId = 2
                     });
             });
 
@@ -327,9 +419,16 @@ partial class MovieDbContextModelSnapshot : ModelSnapshot
                     new
                     {
                         Id = 1,
+                        Budget = 60000000.0m,
+                        Language = "English",
+                        Synopsis = "A man whose childhood wish of bringing his teddy bear to life came true must now decide whether that friendship is more important to him than his girlfriend."
+                    },
+                    new
+                    {
+                        Id = 2,
                         Budget = 68000000.0m,
                         Language = "English",
-                        Synopsis = "In 1985, a lonely young boy named John Bennett makes a Christmas wish that his new teddy bear, Ted, will come to life and be his best friend forever. Miraculously, the wish comes true, and Ted becomes a national celebrity and John's inseparable companion."
+                        Synopsis = "Newlywed couple Ted and Tami-Lynn want to have a baby, but in order to qualify to be a parent, Ted will have to prove he's a person in a court of law."
                     });
             });
 
@@ -367,6 +466,18 @@ partial class MovieDbContextModelSnapshot : ModelSnapshot
                         Id = 2,
                         GenreId = 7,
                         MovieId = 1
+                    },
+                    new
+                    {
+                        Id = 3,
+                        GenreId = 3,
+                        MovieId = 2
+                    },
+                    new
+                    {
+                        Id = 4,
+                        GenreId = 7,
+                        MovieId = 2
                     });
             });
 
@@ -402,8 +513,16 @@ partial class MovieDbContextModelSnapshot : ModelSnapshot
                     new
                     {
                         Id = 1,
-                        Comment = "En kanon film! Måste bara ses.",
+                        Comment = "En kanon film! Mycket skratt. Måste bara ses.",
                         MovieId = 1,
+                        Rating = 5,
+                        ReviewerName = "Jopis"
+                    },
+                    new
+                    {
+                        Id = 2,
+                        Comment = "En fantastiskt bra uppföljare till Ted filmen. Lika rolig och spännande.",
+                        MovieId = 2,
                         Rating = 5,
                         ReviewerName = "Jopis"
                     });

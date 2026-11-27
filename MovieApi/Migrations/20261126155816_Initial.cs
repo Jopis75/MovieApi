@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MovieApi.Migrations;
 
 /// <inheritdoc />
-public partial class _20261125120949_Initial : Migration
+public partial class _20261126155816_Initial : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -160,7 +160,11 @@ public partial class _20261125120949_Initial : Migration
                 { 7, 1964, "Matt Walsh" },
                 { 8, 1980, "Jessica Barth" },
                 { 9, 1947, "Bill Smitrovich" },
-                { 10, 1940, "Patrick Stewart" }
+                { 10, 1940, "Patrick Stewart" },
+                { 11, 1985, "Amanda Seyfried" },
+                { 12, 1937, "Morgan Freeman" },
+                { 13, 1962, "John Slattery" },
+                { 14, 1952, "Michael Dorn" }
             });
 
         migrationBuilder.InsertData(
@@ -183,12 +187,20 @@ public partial class _20261125120949_Initial : Migration
         migrationBuilder.InsertData(
             table: "MovieDetails",
             columns: new[] { "Id", "Budget", "Language", "Synopsis" },
-            values: new object[] { 1, 68000000.0m, "English", "In 1985, a lonely young boy named John Bennett makes a Christmas wish that his new teddy bear, Ted, will come to life and be his best friend forever. Miraculously, the wish comes true, and Ted becomes a national celebrity and John's inseparable companion." });
+            values: new object[,]
+            {
+                { 1, 60000000.0m, "English", "A man whose childhood wish of bringing his teddy bear to life came true must now decide whether that friendship is more important to him than his girlfriend." },
+                { 2, 68000000.0m, "English", "Newlywed couple Ted and Tami-Lynn want to have a baby, but in order to qualify to be a parent, Ted will have to prove he's a person in a court of law." }
+            });
 
         migrationBuilder.InsertData(
             table: "Movie",
             columns: new[] { "Id", "Duration", "MovieDetailsId", "Title", "Year" },
-            values: new object[] { 1, 106, 1, "Ted", 2012 });
+            values: new object[,]
+            {
+                { 1, 106, 1, "Ted", 2012 },
+                { 2, 116, 2, "Ted 2", 2015 }
+            });
 
         migrationBuilder.InsertData(
             table: "MovieActor",
@@ -204,7 +216,17 @@ public partial class _20261125120949_Initial : Migration
                 { 7, 7, 1 },
                 { 8, 8, 1 },
                 { 9, 9, 1 },
-                { 10, 10, 1 }
+                { 10, 10, 1 },
+                { 11, 1, 2 },
+                { 12, 2, 2 },
+                { 13, 11, 2 },
+                { 14, 5, 2 },
+                { 15, 8, 2 },
+                { 16, 12, 2 },
+                { 17, 13, 2 },
+                { 18, 6, 2 },
+                { 19, 14, 2 },
+                { 20, 10, 2 }
             });
 
         migrationBuilder.InsertData(
@@ -213,13 +235,19 @@ public partial class _20261125120949_Initial : Migration
             values: new object[,]
             {
                 { 1, 3, 1 },
-                { 2, 7, 1 }
+                { 2, 7, 1 },
+                { 3, 3, 2 },
+                { 4, 7, 2 }
             });
 
         migrationBuilder.InsertData(
             table: "Review",
             columns: new[] { "Id", "Comment", "MovieId", "Rating", "ReviewerName" },
-            values: new object[] { 1, "En kanon film! Måste bara ses.", 1, 5, "Jopis" });
+            values: new object[,]
+            {
+                { 1, "En kanon film! Mycket skratt. Måste bara ses.", 1, 5, "Jopis" },
+                { 2, "En fantastiskt bra uppföljare till Ted filmen. Lika rolig och spännande.", 2, 5, "Jopis" }
+            });
 
         migrationBuilder.CreateIndex(
             name: "IX_Movie_MovieDetailsId",

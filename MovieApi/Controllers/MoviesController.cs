@@ -168,6 +168,42 @@ public class MoviesController(
     }
 
     [HttpGet]
+    [Route("ReadByActorNameAsync")]
+    [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByActorNameAsync([FromQuery] string actorName)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(actorName))
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "");
+            }
+
+            var movies = await context
+                .Movies
+                .Include(movie => movie.MovieDetails)
+                .Include(movie => movie.MovieGenres)
+                    .ThenInclude(movieGenre => movieGenre.Genre)
+                .Include(movie => movie.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Actor)
+                .Include(movie => movie.Reviews)
+                .Where(movie => movie
+                    .MovieActors
+                    .Any(movieActor => movieActor.Actor != null
+                        && movieActor.Actor.Name != null
+                        && EF.Functions.Like(movieActor.Actor.Name, $"{actorName}%")))
+                .ToListAsync();
+
+            return StatusCode(StatusCodes.Status200OK, movies.Select(mapper.Map<MovieDto>));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpGet]
     [Route("ReadByIdAsync")]
     [ProducesResponseType(typeof(MovieDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
