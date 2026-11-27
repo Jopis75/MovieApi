@@ -214,7 +214,7 @@ public class MoviesController(
     [Route("ReadByActorNameAsync")]
     [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByActorNameAsync([FromQuery] string actorName)
+    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByActorNameAsync(string actorName)
     {
         try
         {
@@ -250,7 +250,7 @@ public class MoviesController(
     [Route("ReadByGenreNameAsync")]
     [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByGenreNameAsync([FromQuery] string genreName)
+    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByGenreNameAsync(string genreName)
     {
         try
         {
