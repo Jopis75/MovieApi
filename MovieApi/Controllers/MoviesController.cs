@@ -194,12 +194,12 @@ public class MoviesController(
                     .MovieActors
                     .Any(movieActor => movieActor.Actor != null
                         && movieActor.Actor.Name != null
-                        && movieActor.Actor.Name == actorName)
+                        && EF.Functions.Like(movieActor.Actor.Name, $"{actorName}%"))
                     && movie
                     .MovieGenres
                     .Any(movieGenre => movieGenre.Genre != null
                         && movieGenre.Genre.Name != null
-                        && movieGenre.Genre.Name == genreName))
+                        && EF.Functions.Like(movieGenre.Genre.Name, $"{genreName}")))
                 .ToListAsync();
 
             return StatusCode(StatusCodes.Status200OK, movies.Select(mapper.Map<MovieDto>));

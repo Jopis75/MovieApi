@@ -2,14 +2,11 @@
 using MovieApi.Dtos.Genres;
 using MovieApi.Dtos.MovieDetails;
 using MovieApi.Dtos.Reviews;
-using MovieApi.Models;
 
 namespace MovieApi.Dtos.Movies
 {
-    public record class MovieDto
+    public record class MovieDto : DtoBase
     {
-        public int Id { get; set; }
-
         public string? Title { get; set; }
 
         public int Year { get; set; }

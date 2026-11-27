@@ -1,6 +1,6 @@
 ﻿namespace MovieApi.Dtos.Actors
 {
-    public class CreateActorDto
+    public record class CreateActorDto
     {
         public string? Name { get; set; }
 
