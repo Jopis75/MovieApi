@@ -55,15 +55,10 @@ namespace MovieApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteAsync(int? id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {
-                if (id == null)
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest);
-                }
-
                 if (id <= 0)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, "id must be greater than 0.");
@@ -98,6 +93,13 @@ namespace MovieApi.Controllers
                 var reviews = await context
                     .Reviews
                     .Include(review => review.Movie)
+                        .ThenInclude(movie => movie!.MovieDetails)
+                    .Include(review => review.Movie)
+                        .ThenInclude(movie => movie!.MovieGenres)
+                            .ThenInclude(movieGenre => movieGenre.Genre)
+                    .Include(review => review.Movie)
+                        .ThenInclude(movie => movie!.MovieActors)
+                            .ThenInclude(movieActor => movieActor.Actor)
                     .ToListAsync();
 
                 return StatusCode(StatusCodes.Status200OK, reviews.Select(mapper.Map<ReviewWithMovieDto>));
@@ -125,7 +127,14 @@ namespace MovieApi.Controllers
                 var review = await context
                     .Reviews
                     .Include(review => review.Movie)
-                    .Where(actor => actor.Id == id)
+                        .ThenInclude(movie => movie!.MovieDetails)
+                    .Include(review => review.Movie)
+                        .ThenInclude(movie => movie!.MovieGenres)
+                            .ThenInclude(movieGenre => movieGenre.Genre)
+                    .Include(review => review.Movie)
+                        .ThenInclude(movie => movie!.MovieActors)
+                            .ThenInclude(movieActor => movieActor.Actor)
+                    .Where(review => review.Id == id)
                     .SingleOrDefaultAsync();
 
                 if (review == null)
@@ -134,6 +143,40 @@ namespace MovieApi.Controllers
                 }
 
                 return StatusCode(StatusCodes.Status200OK, mapper.Map<ReviewWithMovieDto>(review));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("ReadByReviewerNameAsync")]
+        [ProducesResponseType(typeof(IEnumerable<ReviewWithMovieDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<ReviewWithMovieDto>>> ReadByReviewerNameAsync(string reviewerName)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(reviewerName))
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "reviewerName is required.");
+                }
+
+                var reviews = await context
+                    .Reviews
+                    .Include(review => review.Movie)
+                        .ThenInclude(movie => movie!.MovieDetails)
+                    .Include(review => review.Movie)
+                        .ThenInclude(movie => movie!.MovieGenres)
+                            .ThenInclude(movieGenre => movieGenre.Genre)
+                    .Include(review => review.Movie)
+                        .ThenInclude(movie => movie!.MovieActors)
+                            .ThenInclude(movieActor => movieActor.Actor)
+                    .Where(review => review.ReviewerName == reviewerName)
+                    .ToListAsync();
+
+                return StatusCode(StatusCodes.Status200OK, reviews.Select(mapper.Map<ReviewWithMovieDto>));
             }
             catch (Exception ex)
             {

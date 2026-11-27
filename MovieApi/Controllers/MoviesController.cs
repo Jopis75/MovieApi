@@ -179,7 +179,7 @@ public class MoviesController(
 
             if (string.IsNullOrEmpty(genreName))
             {
-                return StatusCode(StatusCodes.Status400BadRequest, "actorName is required.");
+                return StatusCode(StatusCodes.Status400BadRequest, "genreName is required.");
             }
 
             var movies = await context
@@ -256,7 +256,7 @@ public class MoviesController(
         {
             if (string.IsNullOrEmpty(genreName))
             {
-                return StatusCode(StatusCodes.Status400BadRequest, "actorName is required.");
+                return StatusCode(StatusCodes.Status400BadRequest, "genreName is required.");
             }
 
             var movies = await context
@@ -313,6 +313,40 @@ public class MoviesController(
             }
 
             return StatusCode(StatusCodes.Status200OK, mapper.Map<MovieDto>(movie));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("ReadByReviewerNameAsync")]
+    [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByReviewerNameAsync(string reviewerName)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(reviewerName))
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "reviewerName is required.");
+            }
+
+            var movies = await context
+                .Movies
+                .Include(movie => movie.MovieDetails)
+                .Include(movie => movie.MovieGenres)
+                    .ThenInclude(movieGenre => movieGenre.Genre)
+                .Include(movie => movie.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Actor)
+                .Include(movie => movie.Reviews)
+                .Where(movie => movie
+                    .Reviews
+                    .Any(review => review.ReviewerName == reviewerName))
+                .ToListAsync();
+
+            return StatusCode(StatusCodes.Status200OK, movies.Select(mapper.Map<MovieDto>));
         }
         catch (Exception ex)
         {

@@ -94,15 +94,10 @@ public class ActorsController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteAsync(int? id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
         try
         {
-            if (id == null)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest);
-            }
-
             if (id <= 0)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, "id must be greater than 0.");
@@ -117,7 +112,7 @@ public class ActorsController(
 
             var movieActors = await context
                 .MovieActors
-                .Where(movieActor => movieActor.ActorId == id)
+                .Where(movieActor => movieActor.ActorId == actor.Id)
                 .ToListAsync();
 
             context.MovieActors.RemoveRange(movieActors);
@@ -146,6 +141,14 @@ public class ActorsController(
                 .Actors
                 .Include(actor => actor.MovieActors)
                     .ThenInclude(movieActor => movieActor.Movie)
+                        .ThenInclude(movie => movie!.MovieDetails)
+                .Include(actor => actor.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Movie)
+                        .ThenInclude(movie => movie!.MovieGenres)
+                            .ThenInclude(movieGenre => movieGenre.Genre)
+                .Include(actor => actor.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Movie)
+                        .ThenInclude(movie => movie!.Reviews)
                 .ToListAsync();
 
             return StatusCode(StatusCodes.Status200OK, actors.Select(mapper.Map<ActorWithMoviesDto>));
@@ -174,6 +177,14 @@ public class ActorsController(
                 .Actors
                 .Include(actor => actor.MovieActors)
                     .ThenInclude(movieActor => movieActor.Movie)
+                        .ThenInclude(movie => movie!.MovieDetails)
+                .Include(actor => actor.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Movie)
+                        .ThenInclude(movie => movie!.MovieGenres)
+                            .ThenInclude(movieGenre => movieGenre.Genre)
+                .Include(actor => actor.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Movie)
+                        .ThenInclude(movie => movie!.Reviews)
                 .Where(actor => actor.Id == id)
                 .SingleOrDefaultAsync();
 
