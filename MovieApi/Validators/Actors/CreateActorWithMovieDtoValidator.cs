@@ -13,12 +13,14 @@ namespace MovieApi.Validators.Actors
                 .WithMessage("{PropertyName} is required.");
 
             RuleFor(createActorWithMovieDto => createActorWithMovieDto.BirthYear)
-                .GreaterThan(DateTime.MinValue.Year)
-                .WithMessage("{PropertyName}" + $" must be greater than {DateTime.MinValue.Year}.");
+                .GreaterThanOrEqualTo(DateTime.MinValue.Year)
+                .WithMessage("{PropertyName}" + $" must be greater than or equal to {DateTime.MinValue.Year}.");
 
             RuleFor(createActorWithMovieDto => createActorWithMovieDto.MovieId)
-                .GreaterThan(0)
-                .WithMessage("{PropertyName} must be greater than 0.");
+                .GreaterThanOrEqualTo(DateTime.MinValue.Year)
+                .WithMessage("{PropertyName}" + $" must be greater than or equal to {DateTime.MinValue.Year}.")
+                .LessThanOrEqualTo(DateTime.Now.Year)
+                .WithMessage("{PropertyName}" + $" must be less than or equal to {DateTime.Now.Year}.");
         }
     }
 }

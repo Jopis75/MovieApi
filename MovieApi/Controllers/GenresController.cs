@@ -2,7 +2,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MovieApi.Dtos.Actors;
 using MovieApi.Dtos.Genres;
 using MovieApi.Models;
 
@@ -26,7 +25,7 @@ namespace MovieApi.Controllers
         {
             try
             {
-                if (createGenreDtoValidator == null)
+                if (createGenreDto == null)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest);
                 }
@@ -60,7 +59,7 @@ namespace MovieApi.Controllers
         {
             try
             {
-                if (createGenreWithMovieDtoValidator == null)
+                if (createGenreWithMovieDto == null)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest);
                 }
@@ -176,7 +175,7 @@ namespace MovieApi.Controllers
                     return StatusCode(StatusCodes.Status404NotFound);
                 }
 
-                return StatusCode(StatusCodes.Status200OK, mapper.Map<ActorWithMoviesDto>(genre));
+                return StatusCode(StatusCodes.Status200OK, mapper.Map<GenreDto>(genre));
             }
             catch (Exception ex)
             {
@@ -188,6 +187,7 @@ namespace MovieApi.Controllers
         [Route("UpdateAsync")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAsync(UpdateGenreDto updateGenreDto)
         {
@@ -203,6 +203,15 @@ namespace MovieApi.Controllers
                 if (!validationResult.IsValid)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+                }
+
+                var exists = await context
+                    .Genres
+                    .AnyAsync(genre => genre.Id == updateGenreDto.Id);
+
+                if (!exists)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound);
                 }
 
                 var genre = mapper.Map<Genre>(updateGenreDto);

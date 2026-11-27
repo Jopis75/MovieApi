@@ -24,7 +24,7 @@ namespace MovieApi.Controllers
         {
             try
             {
-                if (createReviewDtoValidator == null)
+                if (createReviewDto == null)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest);
                 }
@@ -173,7 +173,7 @@ namespace MovieApi.Controllers
                     .Include(review => review.Movie)
                         .ThenInclude(movie => movie!.MovieActors)
                             .ThenInclude(movieActor => movieActor.Actor)
-                    .Where(review => review.ReviewerName == reviewerName)
+                    .Where(review => EF.Functions.Like(review.ReviewerName, $"{reviewerName}"))
                     .ToListAsync();
 
                 return StatusCode(StatusCodes.Status200OK, reviews.Select(mapper.Map<ReviewWithMovieDto>));
@@ -188,6 +188,7 @@ namespace MovieApi.Controllers
         [Route("UpdateAsync")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAsync(UpdateReviewDto updateReviewDto)
         {
@@ -203,6 +204,15 @@ namespace MovieApi.Controllers
                 if (!validationResult.IsValid)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+                }
+
+                var exists = await context
+                    .Reviews
+                    .AnyAsync(review => review.Id == updateReviewDto.Id);
+
+                if (!exists)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound);
                 }
 
                 var review = mapper.Map<Review>(updateReviewDto);

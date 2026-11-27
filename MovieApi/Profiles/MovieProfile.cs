@@ -56,6 +56,7 @@ namespace MovieApi.Profiles
                     cfg => cfg.MapFrom(updateMovieDto => updateMovieDto.MovieDetailsId));
 
             // MovieGenre.
+            CreateMap<MovieGenre, CreateGenreWithMovieDto>().ReverseMap();
             CreateMap<MovieGenre, MovieGenreDto>().ReverseMap();
 
             // Review.

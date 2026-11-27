@@ -23,7 +23,7 @@ public class ActorsController(
     {
         try
         {
-            if (createActorDtoValidator == null)
+            if (createActorDto == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
             }
@@ -57,7 +57,7 @@ public class ActorsController(
     {
         try
         {
-            if (createActorWithMovieDtoValidator == null)
+            if (createActorWithMovieDto == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
             }
@@ -205,6 +205,7 @@ public class ActorsController(
     [Route("UpdateAsync")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateAsync(UpdateActorDto updateActorDto)
     {
@@ -220,6 +221,15 @@ public class ActorsController(
             if (!validationResult.IsValid)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+            }
+
+            var exists = await context
+                .Actors
+                .AnyAsync(actor => actor.Id == updateActorDto.Id);
+
+            if (!exists)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
             }
 
             var actor = mapper.Map<Actor>(updateActorDto);
