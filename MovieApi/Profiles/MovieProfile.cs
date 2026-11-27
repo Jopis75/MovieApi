@@ -25,7 +25,10 @@ namespace MovieApi.Profiles
             CreateMap<Actor, UpdateActorDto>().ReverseMap();
 
             // Genre.
+            CreateMap<Genre, CreateGenreDto>().ReverseMap();
+            CreateMap<Genre, CreateGenreWithMovieDto>().ReverseMap();
             CreateMap<Genre, GenreDto>().ReverseMap();
+            CreateMap<Genre, UpdateGenreDto>().ReverseMap();
 
             // Movie.
             CreateMap<Movie, CreateMovieDto>().ReverseMap();

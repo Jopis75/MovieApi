@@ -47,7 +47,10 @@ namespace MovieApi
             serviceCollection.AddScoped<IValidator<UpdateActorDto>, UpdateActorDtoValidator>();
 
             // Genre.
+            serviceCollection.AddScoped<IValidator<CreateGenreDto>, CreateGenreDtoValidator>();
+            serviceCollection.AddScoped<IValidator<CreateGenreWithMovieDto>, CreateGenreWithMovieDtoValidator>();
             serviceCollection.AddScoped<IValidator<GenreDto>, GenreDtoValidator>();
+            serviceCollection.AddScoped<IValidator<UpdateGenreDto>, UpdateGenreDtoValidator>();
 
             // Movie.
             serviceCollection.AddScoped<IValidator<CreateMovieWithMovieDetailsAndGenresDto>, CreateMovieWithMovieDetailsAndGenresDtoValidator>();
