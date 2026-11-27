@@ -41,7 +41,6 @@ public class MoviesController(
             var movieDetails = mapper.Map<MovieDetails>(createMovieWithMovieDetailsAndGenresDto);
 
             await context.MovieDetails.AddAsync(movieDetails);
-
             await context.SaveChangesAsync();
 
             var movie = mapper.Map<Movie>(createMovieWithMovieDetailsAndGenresDto);
@@ -50,7 +49,10 @@ public class MoviesController(
             await context.Movies.AddAsync(movie);
             await context.SaveChangesAsync();
 
-            var movieGenres = createMovieWithMovieDetailsAndGenresDto.GenreIds.Select(genreId => new MovieGenre { MovieId = movie.Id, GenreId = genreId });
+            var movieGenres = createMovieWithMovieDetailsAndGenresDto
+                .GenreIds
+                .Select(genreId => new MovieGenre { MovieId = movie.Id, GenreId = genreId })
+                .ToList();
 
             await context.MovieGenres.AddRangeAsync(movieGenres);
             await context.SaveChangesAsync();
@@ -109,15 +111,10 @@ public class MoviesController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteAsync(int? id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
         try
         {
-            if (id == null)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest);
-            }
-
             if (id <= 0)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, "id must be greater than 0.");
@@ -168,16 +165,21 @@ public class MoviesController(
     }
 
     [HttpGet]
-    [Route("ReadByActorNameAsync")]
+    [Route("ReadByActorNameAndGenreNameAsync")]
     [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByActorNameAsync([FromQuery] string actorName)
+    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByActorNameAndGenreNameAsync([FromQuery] string actorName, [FromQuery] string genreName)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(actorName))
+            if (string.IsNullOrEmpty(actorName))
             {
-                return StatusCode(StatusCodes.Status400BadRequest, "");
+                return StatusCode(StatusCodes.Status400BadRequest, "actorName is required.");
+            }
+
+            if (string.IsNullOrEmpty(genreName))
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "actorName is required.");
             }
 
             var movies = await context
@@ -192,7 +194,84 @@ public class MoviesController(
                     .MovieActors
                     .Any(movieActor => movieActor.Actor != null
                         && movieActor.Actor.Name != null
-                        && EF.Functions.Like(movieActor.Actor.Name, $"{actorName}%")))
+                        && movieActor.Actor.Name == actorName)
+                    && movie
+                    .MovieGenres
+                    .Any(movieGenre => movieGenre.Genre != null
+                        && movieGenre.Genre.Name != null
+                        && movieGenre.Genre.Name == genreName))
+                .ToListAsync();
+
+            return StatusCode(StatusCodes.Status200OK, movies.Select(mapper.Map<MovieDto>));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("ReadByActorNameAsync")]
+    [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByActorNameAsync([FromQuery] string actorName)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(actorName))
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "actorName is required.");
+            }
+
+            var movies = await context
+                .Movies
+                .Include(movie => movie.MovieDetails)
+                .Include(movie => movie.MovieGenres)
+                    .ThenInclude(movieGenre => movieGenre.Genre)
+                .Include(movie => movie.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Actor)
+                .Include(movie => movie.Reviews)
+                .Where(movie => movie
+                    .MovieActors
+                    .Any(movieActor => movieActor.Actor != null
+                        && movieActor.Actor.Name != null
+                        && movieActor.Actor.Name == actorName))
+                .ToListAsync();
+
+            return StatusCode(StatusCodes.Status200OK, movies.Select(mapper.Map<MovieDto>));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("ReadByGenreNameAsync")]
+    [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<MovieDto>>> ReadByGenreNameAsync([FromQuery] string genreName)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(genreName))
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "actorName is required.");
+            }
+
+            var movies = await context
+                .Movies
+                .Include(movie => movie.MovieDetails)
+                .Include(movie => movie.MovieGenres)
+                    .ThenInclude(movieGenre => movieGenre.Genre)
+                .Include(movie => movie.MovieActors)
+                    .ThenInclude(movieActor => movieActor.Actor)
+                .Include(movie => movie.Reviews)
+                .Where(movie => movie
+                    .MovieGenres
+                    .Any(movieGenre => movieGenre.Genre != null
+                        && movieGenre.Genre.Name != null
+                        && movieGenre.Genre.Name == genreName))
                 .ToListAsync();
 
             return StatusCode(StatusCodes.Status200OK, movies.Select(mapper.Map<MovieDto>));
@@ -262,12 +341,18 @@ public class MoviesController(
                 return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
             }
 
-            var oldMovieGenres = await context.MovieGenres.Where(movieGenre => movieGenre.MovieId == updateMovieGenresDto.MovieId).ToListAsync();
+            var oldMovieGenres = await context
+                .MovieGenres
+                .Where(movieGenre => movieGenre.MovieId == updateMovieGenresDto.MovieId)
+                .ToListAsync();
 
             context.MovieGenres.RemoveRange(oldMovieGenres);
             await context.SaveChangesAsync();
 
-            var newMovieGenres = updateMovieGenresDto.GenreIds.Select(genreId => new MovieGenre { MovieId = updateMovieGenresDto.MovieId, GenreId = genreId }).ToList();
+            var newMovieGenres = updateMovieGenresDto
+                .GenreIds
+                .Select(genreId => new MovieGenre { MovieId = updateMovieGenresDto.MovieId, GenreId = genreId })
+                .ToList();
 
             await context.MovieGenres.AddRangeAsync(newMovieGenres);
             await context.SaveChangesAsync();
